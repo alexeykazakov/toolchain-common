@@ -2,8 +2,20 @@ package condition
 
 import (
 	toolchainv1alpha1 "github.com/codeready-toolchain/api/pkg/apis/toolchain/v1alpha1"
+
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+// IsTrue returns true if the given slice contains the condition with the given type and that condition has True status.
+func IsTrue(conditions []toolchainv1alpha1.Condition, conditionType toolchainv1alpha1.ConditionType) bool {
+	for _, cond := range conditions {
+		if cond.Type == conditionType {
+			return cond.Status == v1.ConditionTrue
+		}
+	}
+	return false
+}
 
 // AddOrUpdateStatusConditions appends the new conditions to the condition slice. If there is already a condition
 // with the same type in the current condition array then the condition is updated in the result slice.
@@ -25,27 +37,26 @@ func addOrUpdateStatusCondition(conditions []toolchainv1alpha1.Condition, newCon
 
 	if conditions == nil {
 		return []toolchainv1alpha1.Condition{newCondition}, true
-	} else {
-		for i, cond := range conditions {
-			if cond.Type == newCondition.Type {
-				// Condition already present. Update it if needed.
-				if cond.Status == newCondition.Status &&
-					cond.Reason == newCondition.Reason &&
-					cond.Message == newCondition.Message {
-					// Nothing changed. No need to update.
-					return conditions, false
-				}
-
-				// Update LastTransitionTime only if the status changed otherwise keep the old time
-				if newCondition.Status == cond.Status {
-					newCondition.LastTransitionTime = cond.LastTransitionTime
-				}
-				// Don't modify the currentConditions slice. Generate a new slice instead.
-				res := make([]toolchainv1alpha1.Condition, len(conditions))
-				copy(res, conditions)
-				res[i] = newCondition
-				return res, true
+	}
+	for i, cond := range conditions {
+		if cond.Type == newCondition.Type {
+			// Condition already present. Update it if needed.
+			if cond.Status == newCondition.Status &&
+				cond.Reason == newCondition.Reason &&
+				cond.Message == newCondition.Message {
+				// Nothing changed. No need to update.
+				return conditions, false
 			}
+
+			// Update LastTransitionTime only if the status changed otherwise keep the old time
+			if newCondition.Status == cond.Status {
+				newCondition.LastTransitionTime = cond.LastTransitionTime
+			}
+			// Don't modify the currentConditions slice. Generate a new slice instead.
+			res := make([]toolchainv1alpha1.Condition, len(conditions))
+			copy(res, conditions)
+			res[i] = newCondition
+			return res, true
 		}
 	}
 	return append(conditions, newCondition), true

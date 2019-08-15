@@ -96,6 +96,44 @@ func TestAddOrUpdateStatusConditions(t *testing.T) {
 	})
 }
 
+func TestIsTrue(t *testing.T) {
+	// given
+	conditions := []toolchainv1alpha1.Condition{
+		{
+			Type:   toolchainv1alpha1.ConditionType("TestConditionTypeUnknown"),
+			Status: apiv1.ConditionUnknown,
+		},
+		{
+			Type:   toolchainv1alpha1.ConditionType("TestConditionTypeTrue"),
+			Status: apiv1.ConditionTrue,
+		},
+		{
+			Type:   toolchainv1alpha1.ConditionType("TestConditionTypeFalse"),
+			Status: apiv1.ConditionFalse,
+		},
+	}
+
+	t.Run("condition status is true", func(t *testing.T) {
+		// then
+		assert.True(t, condition.IsTrue(conditions, "TestConditionTypeTrue"))
+	})
+
+	t.Run("condition status is false", func(t *testing.T) {
+		// then
+		assert.False(t, condition.IsTrue(conditions, conditions[0].Type))
+	})
+
+	t.Run("condition status is unknown", func(t *testing.T) {
+		// then
+		// explicitly set to unknown
+		assert.False(t, condition.IsTrue(conditions, conditions[2].Type))
+		// no condition with such type
+		assert.False(t, condition.IsTrue(conditions, "DoesNotExist"))
+		// nil is treated as an empty slice
+		assert.False(t, condition.IsTrue(nil, conditions[2].Type))
+	})
+}
+
 func existingConditions(size int) []toolchainv1alpha1.Condition {
 	return conditions(size, "Existing")
 }
