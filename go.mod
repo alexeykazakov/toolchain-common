@@ -25,7 +25,7 @@ require (
 	k8s.io/apimachinery v0.0.0-20190620073744-d16981aedf33
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 	sigs.k8s.io/controller-runtime v0.2.0
-	sigs.k8s.io/kubefed v0.1.0-rc2
+	sigs.k8s.io/kubefed v0.1.0-rc6
 )
 
 // Pinned to kubernetes-1.14.1

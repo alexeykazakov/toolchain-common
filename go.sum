@@ -311,6 +311,8 @@ sigs.k8s.io/controller-runtime v0.2.0/go.mod h1:ZHqrRDZi3f6BzONcvlUxkqCKgwasGk5F
 sigs.k8s.io/controller-tools v0.1.12/go.mod h1:6g08p9m9G/So3sBc1AOQifHfhxH/mb6Sc4z0LMI8XMw=
 sigs.k8s.io/kubefed v0.1.0-rc2 h1:7rX/BH5OFZq6nP42SEHs2i8uQKPfN09FWMkOyr3nf0g=
 sigs.k8s.io/kubefed v0.1.0-rc2/go.mod h1:V1YuAhi6d/zPg61MydwJWsV2z04K749Mvm3g2tx1M7E=
+sigs.k8s.io/kubefed v0.1.0-rc6 h1:ReTe5wFn8OGrvajne9TTQZAfi5pV5Q/7i6VB3OiSPXs=
+sigs.k8s.io/kubefed v0.1.0-rc6/go.mod h1:V1YuAhi6d/zPg61MydwJWsV2z04K749Mvm3g2tx1M7E=
 sigs.k8s.io/structured-merge-diff v0.0.0-20190426204423-ea680f03cc65/go.mod h1:wWxsB5ozmmv/SG7nM11ayaAW51xMvak/t1r0CSlcokI=
 sigs.k8s.io/testing_frameworks v0.1.1 h1:cP2l8fkA3O9vekpy5Ks8mmA0NW/F7yBdXf8brkWhVrs=
 sigs.k8s.io/testing_frameworks v0.1.1/go.mod h1:VVBKrHmJ6Ekkfz284YKhQePcdycOzNH9qL6ht1zEr/U=
