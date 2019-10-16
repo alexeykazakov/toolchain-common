@@ -2,6 +2,8 @@ package condition
 
 import (
 	toolchainv1alpha1 "github.com/codeready-toolchain/api/pkg/apis/toolchain/v1alpha1"
+
+	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -18,6 +20,25 @@ func AddOrUpdateStatusConditions(conditions []toolchainv1alpha1.Condition, newCo
 	}
 
 	return conditions, atLeastOneUpdated
+}
+
+// FindConditionByType returns first Condition with given conditionType
+// along with bool flag which indicates if the Condition is found or not
+func FindConditionByType(conditions []toolchainv1alpha1.Condition, conditionType toolchainv1alpha1.ConditionType) (toolchainv1alpha1.Condition, bool) {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition, true
+		}
+	}
+	return toolchainv1alpha1.Condition{}, false
+}
+
+// IsTrue returns true if the condition with the given condition type is found among the conditions
+// and its status is set to True.
+// Returns false for unknown conditions and conditions with status set to False.
+func IsTrue(conditions []toolchainv1alpha1.Condition, conditionType toolchainv1alpha1.ConditionType) bool {
+	condition, found := FindConditionByType(conditions, conditionType)
+	return found && condition.Status == apiv1.ConditionTrue
 }
 
 func addOrUpdateStatusCondition(conditions []toolchainv1alpha1.Condition, newCondition toolchainv1alpha1.Condition) ([]toolchainv1alpha1.Condition, bool) {

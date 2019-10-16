@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -93,6 +94,76 @@ func TestAddOrUpdateStatusConditions(t *testing.T) {
 				assert.True(t, c.LastTransitionTime.Before(&result[i].LastTransitionTime))
 			}
 		}
+	})
+}
+
+func TestFindConditionByType(t *testing.T) {
+	conditions := []toolchainv1alpha1.Condition{
+		{
+			Type:   toolchainv1alpha1.ConditionReady,
+			Status: corev1.ConditionTrue,
+		},
+	}
+
+	t.Run("found", func(t *testing.T) {
+		got, found := condition.FindConditionByType(conditions, toolchainv1alpha1.ConditionReady)
+		assert.True(t, found)
+		assert.Equal(t, toolchainv1alpha1.ConditionReady, got.Type)
+	})
+
+	t.Run("not_found", func(t *testing.T) {
+		got, found := condition.FindConditionByType(conditions, toolchainv1alpha1.ConditionType("Completed"))
+		assert.False(t, found)
+		assert.Equal(t, toolchainv1alpha1.Condition{}, got)
+	})
+}
+
+func TestIsTrue(t *testing.T) {
+	conditions := []toolchainv1alpha1.Condition{
+		{
+			Type:   toolchainv1alpha1.ConditionReady,
+			Status: corev1.ConditionTrue,
+		},
+		{
+			Type:   "custom_bool",
+			Status: corev1.ConditionTrue,
+		},
+		{
+			Type:   "false_cond",
+			Status: corev1.ConditionFalse,
+		},
+		{
+			Type:   "unknown_cond",
+			Status: corev1.ConditionUnknown,
+		},
+		{
+			Type:   "something_else",
+			Status: "someStatus",
+		},
+	}
+
+	t.Run("ready set to true", func(t *testing.T) {
+		assert.True(t, condition.IsTrue(conditions, toolchainv1alpha1.ConditionReady))
+	})
+
+	t.Run("custom bool set to true", func(t *testing.T) {
+		assert.True(t, condition.IsTrue(conditions, "custom_bool"))
+	})
+
+	t.Run("false", func(t *testing.T) {
+		assert.False(t, condition.IsTrue(conditions, "false_cond"))
+	})
+
+	t.Run("explicitly unknown", func(t *testing.T) {
+		assert.False(t, condition.IsTrue(conditions, "unknown_cond"))
+	})
+
+	t.Run("unknown", func(t *testing.T) {
+		assert.False(t, condition.IsTrue(conditions, "unknown"))
+	})
+
+	t.Run("status is not bool", func(t *testing.T) {
+		assert.False(t, condition.IsTrue(conditions, "something_else"))
 	})
 }
 
