@@ -2,6 +2,8 @@ package useraccount
 
 import (
 	"context"
+	"testing"
+
 	toolchainv1alpha1 "github.com/codeready-toolchain/api/pkg/apis/toolchain/v1alpha1"
 	"github.com/codeready-toolchain/toolchain-common/pkg/test"
 	"github.com/stretchr/testify/assert"
@@ -10,7 +12,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"testing"
 )
 
 type Assertion struct {
@@ -55,6 +56,13 @@ func (a *Assertion) HasSpec(spec toolchainv1alpha1.UserAccountSpec) *Assertion {
 	err := a.loadUaAssertion()
 	require.NoError(a.t, err)
 	assert.EqualValues(a.t, spec, a.userAccount.Spec)
+	return a
+}
+
+func (a *Assertion) MatchEmbeddedSpec(spec toolchainv1alpha1.UserAccountSpecEmbedded) *Assertion {
+	err := a.loadUaAssertion()
+	require.NoError(a.t, err)
+	assert.EqualValues(a.t, spec.UserAccountSpecBase, a.userAccount.Spec.UserAccountSpecBase)
 	return a
 }
 
